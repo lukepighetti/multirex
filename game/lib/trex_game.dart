@@ -24,7 +24,7 @@ class TRexGame extends FlameGame
   late final Image spriteImage;
 
   @override
-  Color backgroundColor() => const Color(0xFFFFFFFF);
+  Color backgroundColor() => const Color.fromARGB(255, 34, 34, 52);
 
   late final player = Player();
   late final horizon = Horizon();
