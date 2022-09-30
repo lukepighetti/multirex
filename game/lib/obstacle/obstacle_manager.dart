@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flame/components.dart';
+import 'package:trex_game/multi/map_manager.dart';
 import 'package:trex_game/obstacle/obstacle.dart';
 import 'package:trex_game/obstacle/obstacle_type.dart';
 import 'package:trex_game/random_extension.dart';
@@ -12,37 +13,25 @@ class ObstacleManager extends Component with HasGameRef<TRexGame> {
   ListQueue<ObstacleType> history = ListQueue();
   static const int maxObstacleDuplication = 2;
 
+  final _mapManager = MapManager();
+
   @override
   void update(double dt) {
-    final obstacles = children.query<Obstacle>();
+    final obstacle = _mapManager.shouldAddObstacle(dt);
 
-    if (obstacles.isNotEmpty) {
-      final lastObstacle = children.last as Obstacle?;
-
-      if (lastObstacle != null &&
-          !lastObstacle.followingObstacleCreated &&
-          lastObstacle.isVisible &&
-          (lastObstacle.x + lastObstacle.width + lastObstacle.gap) <
-              gameRef.size.x) {
-        addNewObstacle();
-        lastObstacle.followingObstacleCreated = true;
-      }
-    } else {
-      addNewObstacle();
+    if (obstacle != null) {
+      addNewObstacle(obstacle);
     }
   }
 
-  void addNewObstacle() {
+  void addNewObstacle(ObstacleType obstacle) {
     final speed = gameRef.currentSpeed;
     if (speed == 0) {
       return;
     }
-    var settings = random.nextBool()
+    final settings = obstacle == ObstacleType.cactusSmall
         ? ObstacleTypeSettings.cactusSmall
         : ObstacleTypeSettings.cactusLarge;
-    if (duplicateObstacleCheck(settings.type) || speed < settings.allowedAt) {
-      settings = ObstacleTypeSettings.cactusSmall;
-    }
 
     final groupSize = _groupSize(settings);
     for (var i = 0; i < groupSize; i++) {
