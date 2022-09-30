@@ -1,0 +1,9 @@
+version: "3"
+
+vars:
+  WEB_PORT: 3000
+
+tasks:
+  build: cd game && flutter build web --web-renderer=canvaskit
+  serve: npx serve -l {{.WEB_PORT}} game/build/web
+  tunnel: ngrok http --subdomain=multi-trex {{.WEB_PORT}}
