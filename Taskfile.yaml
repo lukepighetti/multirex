@@ -4,6 +4,9 @@ vars:
   WEB_PORT: 3000
 
 tasks:
-  build: cd game && flutter build web --web-renderer=canvaskit
-  serve: npx serve -l {{.WEB_PORT}} game/build/web
-  tunnel: ngrok http --subdomain=multi-trex {{.WEB_PORT}}
+  game:build: cd game && flutter build web --web-renderer=canvaskit
+  game:serve: npx serve -l {{.WEB_PORT}} game/build/web
+  game:tunnel: ngrok http --subdomain=multi-trex {{.WEB_PORT}}
+  server:serve: dart server/bin/server.dart
+  server:watch: npx -y nodemon --exec "dart server/bin/server.dart" -e "dart"
+  server:tunnel: ngrok http --subdomain=multi-trex-server 8080
