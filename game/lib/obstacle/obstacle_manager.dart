@@ -4,14 +4,13 @@ import 'package:flame/components.dart';
 import 'package:trex_game/multi/map_manager.dart';
 import 'package:trex_game/obstacle/obstacle.dart';
 import 'package:trex_game/obstacle/obstacle_type.dart';
-import 'package:trex_game/random_extension.dart';
 import 'package:trex_game/trex_game.dart';
 
 class ObstacleManager extends Component with HasGameRef<TRexGame> {
   ObstacleManager();
 
   ListQueue<ObstacleType> history = ListQueue();
-  static const int maxObstacleDuplication = 2;
+  static const int maxObstacleDuplication = 1;
 
   final _mapManager = MapManager();
 
@@ -60,10 +59,6 @@ class ObstacleManager extends Component with HasGameRef<TRexGame> {
   }
 
   int _groupSize(ObstacleTypeSettings settings) {
-    if (gameRef.currentSpeed > settings.multipleAt) {
-      return random.fromRange(1.0, ObstacleTypeSettings.maxGroupSize).floor();
-    } else {
-      return 1;
-    }
+    return 1;
   }
 }
