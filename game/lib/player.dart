@@ -1,3 +1,5 @@
+// ignore_for_file: always_put_control_body_on_new_line
+
 import 'dart:async';
 import 'dart:ui';
 
@@ -69,13 +71,20 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     });
   }
 
+  /// TODO: flying plant / flappybird DLC
+  /// TODO: give spaceships hitbox
+  bool _doubleJumping = false;
   void jump(double speed) {
     if (current == PlayerState.jumping) {
-      return;
-    }
+      if (_doubleJumping) return;
 
-    current = PlayerState.jumping;
-    _jumpVelocity = initialJumpVelocity - (speed / 500);
+      _jumpVelocity = initialJumpVelocity * 0.8 - (speed / 500);
+      _doubleJumping = true;
+    } else {
+      current = PlayerState.jumping;
+      _jumpVelocity = initialJumpVelocity - (speed / 500);
+      _doubleJumping = false;
+    }
   }
 
   void reset() {
