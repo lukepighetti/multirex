@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:trex_game/background/cloud_manager.dart';
 import 'package:trex_game/random_extension.dart';
@@ -27,12 +28,23 @@ class Cloud extends SpriteComponent
 
   @override
   Future<void> onLoad() async {
+    // TODO: GET RID OF THIS
+    debugMode = true;
+
     sprite = Sprite(
       gameRef.spriteImage,
       srcPosition: Vector2(166.0, 2.0),
       srcSize: initialSize,
     );
+
+    // TODO: ensure this hitbox is working
+    addAll([hitbox]);
   }
+
+  late final hitbox = RectangleHitbox(
+    position: super.position,
+    size: initialSize,
+  );
 
   @override
   void update(double dt) {
@@ -45,6 +57,8 @@ class Cloud extends SpriteComponent
     if (!isVisible) {
       removeFromParent();
     }
+
+    hitbox.position = super.position;
   }
 
   bool get isVisible {
