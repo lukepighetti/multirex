@@ -1,5 +1,8 @@
+import 'dart:ui';
+import 'dart:async';
+
 import 'package:flame/collisions.dart';
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Timer;
 import 'package:trex_game/trex_game.dart';
 
 enum PlayerState { crashed, jumping, running, waiting }
@@ -8,6 +11,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     with HasGameRef<TRexGame>, CollisionCallbacks {
   Player() : super(size: Vector2(90, 88));
 
+  // TODO: moon mode: 0.75, earth mode: 1.0, jupiter mode: 1.2
   final double gravity = 1;
 
   final double initialJumpVelocity = -15.0;
@@ -43,6 +47,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
         size: Vector2(88.0, 90.0),
         frames: [Vector2(1514.0, 4.0), Vector2(1602.0, 4.0)],
         stepTime: 0.2,
+        // stepTime: lerpDouble(0.2, 0.1, gameRef.speedProgress)!,
       ),
       PlayerState.waiting: _getAnimation(
         size: Vector2(88.0, 90.0),
@@ -58,6 +63,10 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
       ),
     };
     current = PlayerState.waiting;
+    Timer.periodic(const Duration(seconds: 1), (_) {
+      animations?[PlayerState.running]?.stepTime =
+          lerpDouble(0.5, 0.01, gameRef.speedProgress)!;
+    });
   }
 
   void jump(double speed) {

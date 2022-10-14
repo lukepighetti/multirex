@@ -75,9 +75,13 @@ class TRexGame extends FlameGame
   double currentSpeed = 0.0;
   double timePlaying = 0.0;
 
-  final double acceleration = 10;
-  final double maxSpeed = 2500.0;
+  final double acceleration = 160;
+  final double maxSpeed = 3600.0;
   final double startSpeed = 600;
+
+  // From 0 to 1 based on min to max speed
+  double get speedProgress =>
+      (currentSpeed - startSpeed) / (maxSpeed - startSpeed);
 
   bool get isPlaying => state == GameState.playing;
   bool get isGameOver => state == GameState.gameOver;
@@ -102,6 +106,7 @@ class TRexGame extends FlameGame
 
   void onAction() {
     if (isGameOver || isIntro) {
+      /// ws: start-game
       restart();
       return;
     }
@@ -109,6 +114,7 @@ class TRexGame extends FlameGame
   }
 
   void gameOver() {
+    /// ws: ded
     gameOverPanel.visible = true;
     state = GameState.gameOver;
     player.current = PlayerState.crashed;
