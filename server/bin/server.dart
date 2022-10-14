@@ -27,7 +27,7 @@ void main() async {
   final openSockets = <WeebSocketChannel>{};
 
   // Setup websocket
-  var websocketHandler = webSocketHandler((WebSocketChannel webSocket) {
+  var websocketHandler = webSocketHandler((WeebSocketChannel webSocket) {
     openSockets.add(webSocket);
 
     webSocket.stream.listen(
