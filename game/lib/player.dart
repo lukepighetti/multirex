@@ -49,7 +49,6 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
         size: Vector2(88.0, 90.0),
         frames: [Vector2(1514.0, 4.0), Vector2(1602.0, 4.0)],
         stepTime: 0.2,
-        // stepTime: lerpDouble(0.2, 0.1, gameRef.speedProgress)!,
       ),
       PlayerState.waiting: _getAnimation(
         size: Vector2(88.0, 90.0),
@@ -57,7 +56,8 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
       ),
       PlayerState.jumping: _getAnimation(
         size: Vector2(88.0, 90.0),
-        frames: [Vector2(1339.0, 6.0)],
+        frames: [Vector2(1514.0, 4.0), Vector2(1602.0, 4.0)],
+        stepTime: 0.05,
       ),
       PlayerState.crashed: _getAnimation(
         size: Vector2(88.0, 90.0),
