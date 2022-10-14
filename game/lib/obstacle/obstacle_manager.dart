@@ -56,6 +56,7 @@ class ObstacleManager extends Component with HasGameRef<TRexGame> {
   void reset() {
     removeAll(children);
     history.clear();
+    _mapManager.reset();
   }
 
   int _groupSize(ObstacleTypeSettings settings) {
