@@ -28,7 +28,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: stable
-      - run: flutter pub get
+      - run: cd game && flutter pub get
       - run: task build
       - uses: actions/upload-pages-artifact@v1
         with:
