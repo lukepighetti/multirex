@@ -29,6 +29,7 @@ jobs:
         with:
           channel: stable
       - run: cd game && flutter pub get
+      - run: flutter config --enable-web
       - run: task game:build
       - uses: actions/upload-pages-artifact@v1
         with:
