@@ -6,7 +6,6 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Timer;
 import 'package:trex_game/background/cloud.dart';
-import 'package:trex_game/background/horizon.dart';
 import 'package:trex_game/obstacle/obstacle.dart';
 import 'package:trex_game/trex_game.dart';
 
@@ -126,12 +125,8 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    if (other is Obstacle) {
-      // gameRef.gameOver();
-    } else if (other is Cloud) {
-      print('onCollisionStart: CLOUD!!!!');
-    } else {
-      print('onCollisionStart: ${other.runtimeType}');
+    if (other is Obstacle || other is Cloud) {
+      gameRef.gameOver();
     }
   }
 
