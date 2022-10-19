@@ -1,8 +1,3 @@
-linux/
-macos/
-test/
-window/
-web/
 # Miscellaneous
 *.class
 *.log
