@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:ui';
 
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Timer;
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -110,7 +111,15 @@ class TRexGame extends FlameGame
       restart();
       return;
     }
+
     player.jump(currentSpeed);
+    refreshTimer();
+  }
+
+  Timer? cheatTimer;
+  void refreshTimer() {
+    cheatTimer?.cancel();
+    cheatTimer = Timer(const Duration(seconds: 7), gameOver);
   }
 
   void gameOver() {
@@ -119,6 +128,7 @@ class TRexGame extends FlameGame
     state = GameState.gameOver;
     player.current = PlayerState.crashed;
     currentSpeed = 0.0;
+    cheatTimer?.cancel();
   }
 
   void restart() {
@@ -133,6 +143,7 @@ class TRexGame extends FlameGame
     }
     score = 0;
     _distanceTravelled = 0;
+    refreshTimer();
   }
 
   @override
