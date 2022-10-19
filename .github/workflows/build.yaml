@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [lukepighetti/github-actions]
+    branches: [main]
 
   workflow_dispatch:
 
