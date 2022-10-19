@@ -1,31 +1,20 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:trex_game/background/cloud_manager.dart';
-import 'package:trex_game/random_extension.dart';
 import 'package:trex_game/trex_game.dart';
 
 class Cloud extends SpriteComponent
     with ParentIsA<CloudManager>, HasGameRef<TRexGame> {
   Cloud({required Vector2 position})
-      : cloudGap = random.fromRange(
-          minCloudGap,
-          maxCloudGap,
-        ),
-        super(
+      : super(
           position: position,
           size: initialSize,
         );
 
   static Vector2 initialSize = Vector2(92.0, 28.0);
 
-  static const double maxCloudGap = 400.0;
-  static const double maxSkyLevel = 60.0;
-
-  // Remove variability
-  static const double minCloudGap = maxCloudGap;
-  static const double minSkyLevel = maxSkyLevel;
-
-  final double cloudGap;
+  static const double cloudGap = 400.0;
+  static const double skyLevel = 60.0;
 
   @override
   Future<void> onLoad() async {
