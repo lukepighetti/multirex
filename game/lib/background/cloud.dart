@@ -19,10 +19,11 @@ class Cloud extends SpriteComponent
   static Vector2 initialSize = Vector2(92.0, 28.0);
 
   static const double maxCloudGap = 400.0;
-  static const double minCloudGap = 100.0;
+  static const double maxSkyLevel = 60.0;
 
-  static const double maxSkyLevel = 71.0;
-  static const double minSkyLevel = 30.0;
+  // Remove variability
+  static const double minCloudGap = maxCloudGap;
+  static const double minSkyLevel = maxSkyLevel;
 
   final double cloudGap;
 
@@ -62,8 +63,5 @@ class Cloud extends SpriteComponent
   @override
   void onGameResize(Vector2 gameSize) {
     super.onGameResize(gameSize);
-    y = ((absolutePosition.y / 2 - (maxSkyLevel - minSkyLevel)) +
-            random.fromRange(minSkyLevel, maxSkyLevel)) -
-        absolutePositionOf(absoluteTopLeftPosition).y;
   }
 }
