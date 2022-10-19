@@ -26,7 +26,7 @@ jobs:
         with:
           channel: 'stable'
       - run: task game:get
-      - run: task game:build
+      - run: task game:ci-build
       - uses: actions/upload-pages-artifact@v1
         with:
           path: game/build/web
