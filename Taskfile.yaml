@@ -4,7 +4,10 @@ vars:
   WEB_PORT: 3000
 
 tasks:
+  game:get: cd game && flutter pub get
   game:build: cd game && flutter build web --web-renderer=canvaskit
+  game:ci-build: cd game && flutter build web --base-href=/multirex/ --web-renderer=canvaskit
+  game:clean: cd game && flutter clean
   game:serve: npx serve -l {{.WEB_PORT}} game/build/web
   game:watch: npx -y nodemon -w game --exec "task game:build" -e "dart"
   game:tunnel: ngrok http --subdomain=multi-trex {{.WEB_PORT}}
