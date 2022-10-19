@@ -26,8 +26,6 @@ jobs:
         with:
           channel: 'stable'
       - run: task game:get
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
       - run: task game:build
       - uses: actions/upload-pages-artifact@v1
         with:
