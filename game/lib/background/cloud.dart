@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:trex_game/background/cloud_manager.dart';
 import 'package:trex_game/random_extension.dart';
@@ -31,6 +32,13 @@ class Cloud extends SpriteComponent
       gameRef.spriteImage,
       srcPosition: Vector2(166.0, 2.0),
       srcSize: initialSize,
+    );
+
+    add(
+      RectangleHitbox(
+        size: Vector2(20, 28),
+        position: Vector2(21, 0),
+      ),
     );
   }
 

@@ -5,6 +5,8 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart' hide Timer;
+import 'package:trex_game/background/cloud.dart';
+import 'package:trex_game/obstacle/obstacle.dart';
 import 'package:trex_game/trex_game.dart';
 
 enum PlayerState { crashed, jumping, running, waiting }
@@ -123,7 +125,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    gameRef.gameOver();
+    if (other is Obstacle || other is Cloud) {
+      gameRef.gameOver();
+    }
   }
 
   SpriteAnimation _getAnimation({
