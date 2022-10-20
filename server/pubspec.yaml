@@ -6,9 +6,11 @@ environment:
   sdk: '>=2.18.2 <3.0.0'
 
 dependencies:
+  collection: any
   shelf_router: ^1.1.3
   shelf_web_socket: ^1.0.2
   shelf: ^1.4.0
+  uuid: any
   web_socket_channel: any
 
 dev_dependencies:

@@ -2,92 +2,125 @@
 
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_web_socket/shelf_web_socket.dart';
+import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 var app = Router();
 
 class GameState {
-  bool inProgress = false;
+  GameState(this.socketByPlayerId);
 
-  void startGame() {
-    inProgress = true;
+  final Map<String, WeebSocketChannel> socketByPlayerId;
+
+  static const minPlayers = 2;
+  static const maxPlayers = 4;
+
+  var status = GameStatus.staging;
+
+  /// The people who are watching the game
+  var spectators = <Player>[];
+
+  /// The people that are chosen to play the game
+  var players = <Player>[];
+
+  /// The first person to join is the admin
+  Player? get admin => players.firstOrNull;
+
+  /// First come first serve
+  void joinQueue(Player player) {
+    if (players.length < maxPlayers) {
+      if (players.isEmpty) {
+        player.isAdmin = true;
+        eventNewAdmin(player);
+      }
+      players.add(player);
+      eventPlayerAdded(player);
+    } else {
+      spectators.add(player);
+      eventSpectatorAdded(player);
+    }
   }
 
-  void endGame() {
-    inProgress = false;
+  Future<void> eventNewAdmin(Player player) async {
+    socketByPlayerId.values.sendMessage('new-admin', {'playerId': player.id});
+  }
+
+  Future<void> eventPlayerAdded(Player player) async {
+    socketByPlayerId.values
+        .sendMessage('player-added', {'playerId': player.id});
+  }
+
+  Future<void> eventSpectatorAdded(Player player) async {
+    socketByPlayerId.values
+        .sendMessage('spectator-added', {'playerId': player.id});
   }
 }
 
+class Player {
+  Player({
+    required this.id,
+  });
+
+  final String id;
+
+  var isAdmin = false;
+
+  final name = "dinooooo";
+  final plays = 0;
+  final wins = 0;
+  final subscriptionType = SubscriptionType.none;
+}
+
+enum GameStatus {
+  /// When we're waiting for enough people to play a game
+  staging,
+
+  /// When there is an active game
+  playing,
+
+  /// When we're displaying the results of the previous game
+  gameover,
+}
+
+/// Twitch subscription type
+enum SubscriptionType {
+  none,
+  following,
+  subTier1,
+  subTier2,
+  subTier3,
+}
+
 void main() async {
-  final game = GameState();
-  final openSockets = <WeebSocketChannel>{};
+  final socketByPlayerId = <String, WeebSocketChannel>{};
+  final game = GameState(socketByPlayerId);
 
   // Setup websocket
-  var websocketHandler = webSocketHandler((WeebSocketChannel webSocket) {
-    openSockets.add(webSocket);
+  var websocketHandler = webSocketHandler((WeebSocketChannel socket) {
+    final playerId = Uuid().v4();
+    socketByPlayerId[playerId] = socket;
 
-    webSocket.stream.listen(
+    socket.stream.listen(
       (rawMessage) {
         final message = WebsocketPayload.fromJsonString(rawMessage);
-
         switch (message.type) {
-          case "ping":
-            webSocket.sink.add(WebsocketPayload('pong').toJsonString());
+          case ('join-queue'):
+            final player = Player(id: playerId);
+            game.joinQueue(player);
             break;
-
-          case "start-game":
-            if (game.inProgress) {
-              webSocket.sendError(
-                  'GAME_IN_PROGRESS', 'Game already in progress');
-            } else {
-              game.startGame();
-
-              // message all websockets that game has started
-              openSockets.forEach(
-                (e) => e.sink.add(WebsocketPayload('start-game')),
-              );
-            }
-            break;
-
-          case "jump":
-            if (!game.inProgress) {
-              webSocket.sendError(
-                  'GAME_NOT_IN_PROGRESS', 'Game is not in progress');
-            } else {
-              // message all websockets that a jump occurred
-              openSockets.forEach(
-                (e) => e.sink.add(WebsocketPayload('jump')),
-              );
-            }
-            break;
-
-          case "ded":
-            if (!game.inProgress) {
-              webSocket.sendError(
-                  'GAME_NOT_IN_PROGRESS', 'Game is not in progress');
-            } else {
-              game.endGame();
-
-              // message all websockets that a jump occurred
-              openSockets.forEach(
-                (e) => e.sink.add(WebsocketPayload('ded')),
-              );
-            }
-            break;
-
-          default:
-            webSocket.sendError('UNKNOWN_TYPE', 'Unsupported message type');
         }
       },
       onError: (_) {
-        openSockets.remove(webSocket);
+        socket.sendError('WEBSOCKET-ERROR');
+        socketByPlayerId.remove(playerId);
       },
       onDone: () {
-        openSockets.remove(webSocket);
+        socketByPlayerId.remove(playerId);
       },
       cancelOnError: true,
     );
@@ -112,8 +145,20 @@ void main() async {
 
 typedef WeebSocketChannel = WebSocketChannel;
 
+extension on Iterable<WeebSocketChannel> {
+  void sendMessage(String type, Map<String, dynamic> payload) {
+    for (final socket in this) {
+      socket.sendMessage(type, payload);
+    }
+  }
+}
+
 extension on WeebSocketChannel {
-  void sendError(String code, String message) {
+  void sendMessage(String type, Map<String, dynamic> payload) {
+    return sink.add(WebsocketPayload(type, payload: payload).toJsonString());
+  }
+
+  void sendError(String code, [String message = '']) {
     return sink.add(WebsocketPayload(
       'error',
       payload: {"message": message, "code": code},
